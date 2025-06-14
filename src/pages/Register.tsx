@@ -55,7 +55,7 @@ const Register: React.FC = () => {
     }
 
     try {
-      const success = await register(formData.name, formData.email.trim(), formData.password);
+      const success = await register(formData.email.trim(), formData.password, formData.name);
       if (success) {
         navigate('/');
       } else {
