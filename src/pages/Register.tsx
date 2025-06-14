@@ -27,6 +27,21 @@ const Register: React.FC = () => {
     setIsLoading(true);
     setError('');
 
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('All fields are required');
+      setIsLoading(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
@@ -40,14 +55,14 @@ const Register: React.FC = () => {
     }
 
     try {
-      const success = await register(formData.name, formData.email, formData.password);
+      const success = await register(formData.name, formData.email.trim(), formData.password);
       if (success) {
         navigate('/');
       } else {
         setError('Registration failed. Please try again.');
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+    } catch (err: any) {
+      setError(err?.message || 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
