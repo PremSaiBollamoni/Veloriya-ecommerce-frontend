@@ -188,37 +188,42 @@ const Profile: React.FC = () => {
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Profile Header */}
-        <div className="relative mb-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl p-8 text-white">
-          <div className="flex items-center space-x-6">
-            <div className="relative">
-              {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-24 h-24 rounded-full border-4 border-white object-cover"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full border-4 border-white bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <span className="text-white text-3xl font-bold">
-                    {user.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </span>
+        <div className="relative mb-8 bg-gradient-to-r from-blue-500 to-teal-400 rounded-xl overflow-hidden">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="relative p-6 sm:p-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              {/* Profile Info */}
+              <div className="flex-1">
+                <h1 className="font-poppins text-4xl font-bold text-white mb-4">
+                  {user.name}
+                </h1>
+                <div className="space-y-2">
+                  <div className="flex items-center text-white/90">
+                    <Mail className="w-5 h-5 mr-3" />
+                    <span className="font-lato">{user.email}</span>
+                  </div>
+                  <div className="flex items-center text-white/90">
+                    <Calendar className="w-5 h-5 mr-3" />
+                    <span className="font-lato">Member since {new Date(user.memberSince).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long'
+                    })}</span>
+                  </div>
+                  {user.phone && (
+                    <div className="flex items-center text-white/90">
+                      <Phone className="w-5 h-5 mr-3" />
+                      <span className="font-lato">{user.phone}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              <div className="absolute bottom-0 right-0 bg-success-500 p-1 rounded-full border-2 border-white">
-                <Shield className="w-4 h-4" />
               </div>
-            </div>
-            <div>
-              <h1 className="font-poppins text-3xl font-bold">{user.name}</h1>
-              <div className="flex items-center space-x-4 mt-2 text-white/80">
-                <div className="flex items-center">
-                  <Mail className="w-4 h-4 mr-2" />
-                  {user.email}
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Member since {user.memberSince}
-                </div>
+
+              {/* Member Badge */}
+              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <Shield className="w-5 h-5 text-white mr-2" />
+                <span className="text-white font-medium">
+                  {stats?.memberLevel || 'Member'}
+                </span>
               </div>
             </div>
           </div>
