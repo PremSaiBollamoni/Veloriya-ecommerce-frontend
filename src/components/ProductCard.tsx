@@ -116,8 +116,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               onClick={handleWishlistClick}
               className={`flex items-center justify-center p-2 rounded-full transition-colors ${
                 isInWishlist
-                  ? 'text-error-600 dark:text-error-400 hover:text-error-700 dark:hover:text-error-300'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-error-600 dark:hover:text-error-400'
+                  ? 'text-error-600 dark:text-error-400 hover:text-error-700 dark:hover:text-error-300 bg-error-50 dark:bg-error-900/20'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-error-600 dark:hover:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/20'
               }`}
               title={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
             >
@@ -127,7 +127,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <button
               onClick={handleAddToCart}
               disabled={!product.inStock}
-              className="flex items-center justify-center p-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 disabled:text-gray-400 dark:disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center justify-center p-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-full disabled:text-gray-400 dark:disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
               title={product.inStock ? 'Add to Cart' : 'Out of Stock'}
             >
               <ShoppingCart className="w-5 h-5" />
