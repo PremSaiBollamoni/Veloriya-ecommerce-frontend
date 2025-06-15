@@ -26,8 +26,8 @@ const Contact_Info = {
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
               </div>
               <span className="font-poppins font-bold text-xl">Veloriya</span>
             </div>
-            <p className="text-gray-400 font-lato mb-4">
+            <p className="text-gray-400 font-lato mb-4 text-sm sm:text-base">
               Your premium destination for quality products and exceptional shopping experience.
             </p>
             <div className="flex space-x-4">
@@ -62,50 +62,50 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="font-poppins font-semibold text-lg mb-4">Quick Links</h3>
-            <ul className="space-y-2 font-lato">
-              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/products" className="text-gray-400 hover:text-white transition-colors">Products</Link></li>
-              <li><Link to="/categories" className="text-gray-400 hover:text-white transition-colors">Categories</Link></li>
-              <li><Link to="/cart" className="text-gray-400 hover:text-white transition-colors">Cart</Link></li>
+          <div className="space-y-4">
+            <h3 className="font-poppins font-semibold text-lg mb-2 sm:mb-4">Quick Links</h3>
+            <ul className="space-y-2 sm:space-y-3 font-lato">
+              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Home</Link></li>
+              <li><Link to="/products" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Products</Link></li>
+              <li><Link to="/categories" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Categories</Link></li>
+              <li><Link to="/cart" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Cart</Link></li>
             </ul>
           </div>
 
           {/* Customer Service */}
-          <div>
-            <h3 className="font-poppins font-semibold text-lg mb-4">Customer Service</h3>
-            <ul className="space-y-2 font-lato">
-              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact Us</Link></li>
-              <li><Link to="/faq" className="text-gray-400 hover:text-white transition-colors">FAQ</Link></li>
-              <li><Link to="/shipping" className="text-gray-400 hover:text-white transition-colors">Shipping Info</Link></li>
-              <li><Link to="/returns" className="text-gray-400 hover:text-white transition-colors">Returns</Link></li>
-              <li><Link to="/size-guide" className="text-gray-400 hover:text-white transition-colors">Size Guide</Link></li>
+          <div className="space-y-4">
+            <h3 className="font-poppins font-semibold text-lg mb-2 sm:mb-4">Customer Service</h3>
+            <ul className="space-y-2 sm:space-y-3 font-lato">
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Contact Us</Link></li>
+              <li><Link to="/faq" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">FAQ</Link></li>
+              <li><Link to="/shipping" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Shipping Info</Link></li>
+              <li><Link to="/returns" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Returns</Link></li>
+              <li><Link to="/size-guide" className="text-gray-400 hover:text-white transition-colors block text-sm sm:text-base">Size Guide</Link></li>
             </ul>
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="font-poppins font-semibold text-lg mb-4">Contact Info</h3>
+          <div className="space-y-4">
+            <h3 className="font-poppins font-semibold text-lg mb-2 sm:mb-4">Contact Info</h3>
             <div className="space-y-3 font-lato">
               <div className="flex items-center space-x-3 text-gray-400">
-                <Mail className="w-4 h-4" />
-                <a href="mailto:prem.0820.04@gmail.com" className="hover:text-white transition-colors">
+                <Mail className="w-4 h-4 flex-shrink-0" />
+                <a href="mailto:prem.0820.04@gmail.com" className="hover:text-white transition-colors text-sm sm:text-base break-all">
                   prem.0820.04@gmail.com
                 </a>
               </div>
               <div className="flex items-center space-x-3 text-gray-400">
-                <Phone className="w-4 h-4" />
-                <a href="tel:+918074850696" className="hover:text-white transition-colors">
+                <Phone className="w-4 h-4 flex-shrink-0" />
+                <a href="tel:+918074850696" className="hover:text-white transition-colors text-sm sm:text-base">
                   +91 8074850696 / +91 7981698255
                 </a>
               </div>
               <div className="flex items-center space-x-3 text-gray-400">
-                <MapPin className="w-4 h-4" />
+                <MapPin className="w-4 h-4 flex-shrink-0" />
                 <a href="https://maps.google.com/?q=Kurnool,Andhra+Pradesh,India" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   className="hover:text-white transition-colors">
+                   className="hover:text-white transition-colors text-sm sm:text-base">
                   Kurnool, Andhra Pradesh, India
                 </a>
               </div>
@@ -113,25 +113,27 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex flex-col items-center md:items-start space-y-2 md:space-y-0">
-            <p className="text-gray-400 font-lato text-sm">
-              © 2025 Veloriya. All rights reserved.
-            </p>
-            <p className="text-gray-400 font-lato text-sm italic">
-              Developed & Designed with ❤️ by Prem
-            </p>
-          </div>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="/privacy-policy" className="text-gray-400 hover:text-white text-sm font-lato transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms-of-service" className="text-gray-400 hover:text-white text-sm font-lato transition-colors">
-              Terms of Service
-            </Link>
-            <Link to="/cookie-policy" className="text-gray-400 hover:text-white text-sm font-lato transition-colors">
-              Cookie Policy
-            </Link>
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div className="flex flex-col items-center sm:items-start space-y-2">
+              <p className="text-gray-400 font-lato text-sm">
+                © 2025 Veloriya. All rights reserved.
+              </p>
+              <p className="text-gray-400 font-lato text-sm italic">
+                Developed & Designed with ❤️ by Prem
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6">
+              <Link to="/privacy-policy" className="text-gray-400 hover:text-white text-sm font-lato transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/terms-of-service" className="text-gray-400 hover:text-white text-sm font-lato transition-colors">
+                Terms of Service
+              </Link>
+              <Link to="/cookie-policy" className="text-gray-400 hover:text-white text-sm font-lato transition-colors">
+                Cookie Policy
+              </Link>
+            </div>
           </div>
         </div>
       </div>
