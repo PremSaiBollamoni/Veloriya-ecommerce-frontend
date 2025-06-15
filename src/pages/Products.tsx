@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, ChevronDown, ShoppingCart, Heart } from 'lucide-react';
+import { Search, Filter, Grid, List, ChevronDown, ShoppingCart, Heart, Star } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -36,7 +36,7 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, wishlistItems } = useWishlist();
+  const { addToWishlist, removeFromWishlist, state: wishlistState } = useWishlist();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,7 +74,7 @@ const Products = () => {
   };
 
   const handleToggleWishlist = (productId: string) => {
-    const isInWishlist = wishlistItems.some((item: Product) => item._id === productId);
+    const isInWishlist = wishlistState.items.some(item => item._id === productId);
     if (isInWishlist) {
       removeFromWishlist(productId);
     } else {
@@ -83,7 +83,7 @@ const Products = () => {
   };
 
   const isItemInWishlist = (productId: string) => {
-    return wishlistItems.some((item: Product) => item._id === productId);
+    return wishlistState.items.some(item => item._id === productId);
   };
 
   return (
@@ -279,8 +279,25 @@ const Products = () => {
                                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                                   {product.description}
                                 </p>
+                                <div className="flex items-center mb-4">
+                                  <div className="flex items-center text-yellow-400">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`w-4 h-4 ${
+                                          i < Math.floor(product.rating || 0)
+                                            ? 'fill-current'
+                                            : 'text-gray-300 dark:text-gray-600'
+                                        }`}
+                                      />
+                                    ))}
+                                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                      ({product.reviews?.length || 0} reviews)
+                                    </span>
+                                  </div>
+                                </div>
                                 <div className="space-y-1 sm:space-y-2">
-                                  {product.features.slice(0, 2).map((feature, index) => (
+                                  {product.features?.slice(0, 2).map((feature, index) => (
                                     <div key={index} className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-400">
                                       <span className="mr-2">•</span>
                                       <span>{feature}</span>
