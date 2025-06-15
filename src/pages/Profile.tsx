@@ -191,11 +191,19 @@ const Profile: React.FC = () => {
         <div className="relative mb-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl p-8 text-white">
           <div className="flex items-center space-x-6">
             <div className="relative">
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-24 h-24 rounded-full border-4 border-white object-cover"
-              />
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-24 h-24 rounded-full border-4 border-white object-cover"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full border-4 border-white bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <span className="text-white text-3xl font-bold">
+                    {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </span>
+                </div>
+              )}
               <div className="absolute bottom-0 right-0 bg-success-500 p-1 rounded-full border-2 border-white">
                 <Shield className="w-4 h-4" />
               </div>
