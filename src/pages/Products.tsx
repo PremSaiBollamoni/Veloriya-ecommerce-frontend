@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List } from 'lucide-react';
+import { Search, Filter, Grid, List, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -16,7 +16,7 @@ interface Product {
   originalPrice?: number;
   description: string;
   image: string;
-  category: Category;
+  category: string;
   features: string[];
   rating: number;
   reviews: any[];
@@ -31,6 +31,7 @@ const Products = () => {
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,7 +73,7 @@ const Products = () => {
           </h1>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="relative max-w-md">
+          <form onSubmit={handleSearch} className="relative max-w-md w-full">
             <input
               type="text"
               value={searchQuery}
@@ -85,8 +86,58 @@ const Products = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className="w-full lg:w-64 space-y-6">
+          {/* Mobile Category Dropdown */}
+          <div className="lg:hidden w-full mb-4">
+            <div className="relative">
+              <button
+                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                className="w-full flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow text-gray-900 dark:text-white"
+              >
+                <span className="flex items-center">
+                  <Filter className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
+                  {selectedCategory || 'All Categories'}
+                </span>
+                <ChevronDown className={`w-5 h-5 transition-transform ${isCategoryDropdownOpen ? 'transform rotate-180' : ''}`} />
+              </button>
+              
+              {isCategoryDropdownOpen && (
+                <div className="absolute z-20 w-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-60 overflow-y-auto">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('');
+                      setIsCategoryDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 text-sm ${
+                      selectedCategory === ''
+                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    All Categories
+                  </button>
+                  {categories.map((category) => (
+                    <button
+                      key={category._id}
+                      onClick={() => {
+                        setSelectedCategory(category.name);
+                        setIsCategoryDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-sm ${
+                        selectedCategory === category.name
+                          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop Filters Sidebar */}
+          <div className="hidden lg:block w-64 space-y-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
@@ -166,7 +217,7 @@ const Products = () => {
                 {isLoading ? (
                   <div className={`grid ${
                     view === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
+                      ? 'grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
                       : 'grid-cols-1 gap-4'
                   }`}>
                     {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -180,7 +231,7 @@ const Products = () => {
                 ) : (
                   <div className={`grid ${
                     view === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
+                      ? 'grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
                       : 'grid-cols-1 gap-4'
                   }`}>
                     {products.map((product) => (
