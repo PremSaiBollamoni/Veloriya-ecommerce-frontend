@@ -72,9 +72,9 @@ const Cart: React.FC = () => {
             {state.items.map((item) => (
               <div
                 key={item._id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6"
               >
-                <div className="flex items-center space-x-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                   {/* Product Image */}
                   <div className="flex-shrink-0">
                     <img
@@ -94,41 +94,41 @@ const Cart: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Quantity Controls */}
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}
-                      className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    
-                    <span className="font-nunito font-semibold text-gray-900 dark:text-white min-w-[2rem] text-center">
-                      {item.quantity}
-                    </span>
-                    
-                    <button
-                      onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}
-                      className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {/* Quantity Controls & Total - Stacked on mobile */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}
+                        className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      
+                      <span className="font-nunito font-semibold text-gray-900 dark:text-white min-w-[2rem] text-center">
+                        {item.quantity}
+                      </span>
+                      
+                      <button
+                        onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}
+                        className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
 
-                  {/* Item Total */}
-                  <div className="text-right">
-                    <p className="font-poppins font-bold text-gray-900 dark:text-white text-lg">
-                      {formatCurrency(item.price * item.quantity)}
-                    </p>
-                  </div>
+                    <div className="flex items-center justify-between w-full sm:w-auto gap-4">
+                      <p className="font-poppins font-bold text-gray-900 dark:text-white text-lg">
+                        {formatCurrency(item.price * item.quantity)}
+                      </p>
 
-                  {/* Remove Button */}
-                  <button
-                    onClick={() => handleRemoveItem(item._id)}
-                    className="text-error-500 hover:text-error-600 p-2 rounded-lg hover:bg-error-50 dark:hover:bg-error-900/20 transition-colors"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                      <button
+                        onClick={() => handleRemoveItem(item._id)}
+                        className="text-error-500 hover:text-error-600 p-2 rounded-lg hover:bg-error-50 dark:hover:bg-error-900/20 transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -136,7 +136,7 @@ const Cart: React.FC = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:sticky lg:top-8">
               <h2 className="font-poppins text-xl font-bold text-gray-900 dark:text-white mb-4">
                 Order Summary
               </h2>
@@ -169,19 +169,21 @@ const Cart: React.FC = () => {
                 </div>
               </div>
 
-              <Link
-                to="/checkout"
-                className="w-full mt-6 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-nunito font-semibold rounded-lg transition-colors text-center block"
-              >
-                Proceed to Checkout
-              </Link>
+              <div className="mt-6 space-y-3">
+                <Link
+                  to="/checkout"
+                  className="w-full px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-nunito font-semibold rounded-lg transition-colors text-center block"
+                >
+                  Proceed to Checkout
+                </Link>
 
-              <Link
-                to="/products"
-                className="w-full mt-3 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 font-nunito font-semibold rounded-lg transition-colors text-center block"
-              >
-                Continue Shopping
-              </Link>
+                <Link
+                  to="/products"
+                  className="w-full px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 font-nunito font-semibold rounded-lg transition-colors text-center block"
+                >
+                  Continue Shopping
+                </Link>
+              </div>
             </div>
           </div>
         </div>
