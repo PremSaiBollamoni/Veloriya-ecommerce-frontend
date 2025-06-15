@@ -260,9 +260,9 @@ const Products = () => {
                         <ProductCard key={product._id} product={product} />
                       ) : (
                         <div key={product._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                          <div className="flex flex-col sm:flex-row gap-6">
+                          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                             {/* Product Image */}
-                            <div className="w-full sm:w-48 h-48">
+                            <div className="w-full sm:w-48 h-48 flex-shrink-0">
                               <img
                                 src={product.image}
                                 alt={product.name}
@@ -273,15 +273,15 @@ const Products = () => {
                             {/* Product Info */}
                             <div className="flex-1 flex flex-col">
                               <div className="flex-1">
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
                                   {product.name}
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                                   {product.description}
                                 </p>
-                                <div className="space-y-2">
+                                <div className="space-y-1 sm:space-y-2">
                                   {product.features.slice(0, 2).map((feature, index) => (
-                                    <div key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                                    <div key={index} className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-400">
                                       <span className="mr-2">•</span>
                                       <span>{feature}</span>
                                     </div>
@@ -290,9 +290,9 @@ const Products = () => {
                               </div>
                               
                               {/* Price and Actions */}
-                              <div className="mt-4 flex flex-wrap items-center gap-4">
+                              <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-4">
                                 <div className="flex items-baseline">
-                                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                                  <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                                     {formatCurrency(product.price)}
                                   </span>
                                   {product.originalPrice && (
@@ -305,7 +305,7 @@ const Products = () => {
                                   <button
                                     onClick={() => handleAddToCart(product)}
                                     disabled={!product.inStock}
-                                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                                    className="flex-1 sm:flex-none px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                   >
                                     <ShoppingCart className="w-4 h-4" />
                                     <span>{product.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
