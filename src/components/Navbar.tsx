@@ -126,8 +126,8 @@ const Navbar: React.FC = () => {
                       className="w-8 h-8 rounded-full object-cover border-2 border-primary-200 dark:border-primary-700" 
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center border-2 border-primary-200 dark:border-primary-700">
-                      <span className="text-primary-700 dark:text-primary-300 font-semibold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 flex items-center justify-center">
+                      <span className="text-white font-semibold text-sm">
                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                       </span>
                     </div>
@@ -135,15 +135,21 @@ const Navbar: React.FC = () => {
                   <span className="hidden sm:block font-lato text-sm text-gray-700 dark:text-gray-300">{user?.name}</span>
                 </button>
                 {/* User dropdown */}
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <div className="py-2">
-                    <button onClick={() => handleNavigation('/profile')} className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">My Profile</button>
-                    <button onClick={() => handleNavigation('/orders')} className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">My Orders</button>
-                    <button onClick={() => handleNavigation('/wishlist')} className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Wishlist</button>
+                <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-1">
+                    <button onClick={() => handleNavigation('/profile')} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      My Profile
+                    </button>
+                    <button onClick={() => handleNavigation('/orders')} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      My Orders
+                    </button>
+                    <button onClick={() => handleNavigation('/wishlist')} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Wishlist
+                    </button>
                     <hr className="my-1 border-gray-200 dark:border-gray-700" />
                     <button 
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="w-full text-left px-4 py-2 text-sm text-error-600 dark:text-error-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Sign Out
                     </button>
