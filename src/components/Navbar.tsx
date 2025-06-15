@@ -20,6 +20,12 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+    setIsMenuOpen(false);
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
   };
 
   return (
@@ -27,7 +33,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center space-x-3 group">
             <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg">
               <span className="text-white font-bold text-lg">V</span>
             </div>
@@ -84,6 +90,7 @@ const Navbar: React.FC = () => {
             {/* Wishlist */}
             <Link 
               to="/wishlist" 
+              onClick={() => setIsMenuOpen(false)}
               className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <Heart className="w-5 h-5" />
@@ -95,7 +102,11 @@ const Navbar: React.FC = () => {
             </Link>
 
             {/* Cart */}
-            <Link to="/cart" className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Link 
+              to="/cart" 
+              onClick={() => setIsMenuOpen(false)}
+              className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
               <ShoppingBag className="w-5 h-5" />
               {cartState.itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-bounce-subtle font-bold">
@@ -108,15 +119,27 @@ const Navbar: React.FC = () => {
             {isAuthenticated ? (
               <div className="relative group">
                 <button className="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                  <img src={user?.avatar} alt={user?.name} className="w-8 h-8 rounded-full object-cover border-2 border-primary-200 dark:border-primary-700" />
+                  {user?.avatar ? (
+                    <img 
+                      src={user.avatar} 
+                      alt={user.name} 
+                      className="w-8 h-8 rounded-full object-cover border-2 border-primary-200 dark:border-primary-700" 
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center border-2 border-primary-200 dark:border-primary-700">
+                      <span className="text-primary-700 dark:text-primary-300 font-semibold text-sm">
+                        {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                  )}
                   <span className="hidden sm:block font-lato text-sm text-gray-700 dark:text-gray-300">{user?.name}</span>
                 </button>
                 {/* User dropdown */}
                 <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <div className="py-2">
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">My Profile</Link>
-                    <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">My Orders</Link>
-                    <Link to="/wishlist" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Wishlist</Link>
+                    <button onClick={() => handleNavigation('/profile')} className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">My Profile</button>
+                    <button onClick={() => handleNavigation('/orders')} className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">My Orders</button>
+                    <button onClick={() => handleNavigation('/wishlist')} className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Wishlist</button>
                     <hr className="my-1 border-gray-200 dark:border-gray-700" />
                     <button 
                       onClick={handleLogout}
@@ -128,7 +151,11 @@ const Navbar: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <Link to="/login" className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+              <Link 
+                to="/login" 
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
                 <User className="w-5 h-5" />
               </Link>
             )}
@@ -147,30 +174,30 @@ const Navbar: React.FC = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700 animate-slide-in">
             <div className="flex flex-col space-y-4">
-              <Link 
-                to="/" 
+              <button 
+                onClick={() => handleNavigation('/')}
                 className={`font-lato font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${
                   isActive('/') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 Home
-              </Link>
-              <Link 
-                to="/products" 
+              </button>
+              <button 
+                onClick={() => handleNavigation('/products')}
                 className={`font-lato font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${
                   isActive('/products') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 Products
-              </Link>
-              <Link 
-                to="/categories" 
+              </button>
+              <button 
+                onClick={() => handleNavigation('/categories')}
                 className={`font-lato font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${
                   isActive('/categories') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 Categories
-              </Link>
+              </button>
             </div>
           </div>
         )}
