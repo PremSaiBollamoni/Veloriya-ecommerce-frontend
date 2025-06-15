@@ -9,6 +9,20 @@ interface User {
   email: string;
   isAdmin?: boolean;
   avatar?: string;
+  phone?: string;
+  address?: string;
+  memberSince: string;
+  orders: Array<{
+    id: string;
+    date: string;
+    status: string;
+    total: number;
+    items: Array<{
+      name: string;
+      quantity: number;
+      price: number;
+    }>;
+  }>;
 }
 
 interface AuthContextType {
