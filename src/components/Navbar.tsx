@@ -73,12 +73,6 @@ const Navbar: React.FC = () => {
 
           {/* Right Icons */}
           <div className="flex items-center space-x-3">
-            {/* Notifications */}
-            <button className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-accent-500 rounded-full"></span>
-            </button>
-
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -126,13 +120,10 @@ const Navbar: React.FC = () => {
                       className="w-8 h-8 rounded-full object-cover border-2 border-primary-200 dark:border-primary-700" 
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                      </span>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 flex items-center justify-center text-white">
+                      {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
                   )}
-                  <span className="hidden sm:block font-lato text-sm text-gray-700 dark:text-gray-300">{user?.name}</span>
                 </button>
                 {/* User dropdown */}
                 <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
