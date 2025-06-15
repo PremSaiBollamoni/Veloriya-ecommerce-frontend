@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, ChevronDown } from 'lucide-react';
+import { Search, Filter, Grid, List, ChevronDown, ShoppingCart, Heart } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import { API_URL } from '../config';
+import { formatCurrency } from '../utils/currency';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 interface Category {
   _id: string;
@@ -32,6 +35,8 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, wishlistItems } = useWishlist();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +67,23 @@ const Products = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // Search is handled by the useEffect
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({ ...product, quantity: 1 });
+  };
+
+  const handleToggleWishlist = (productId: string) => {
+    const isInWishlist = wishlistItems.some((item: Product) => item._id === productId);
+    if (isInWishlist) {
+      removeFromWishlist(productId);
+    } else {
+      addToWishlist(productId);
+    }
+  };
+
+  const isItemInWishlist = (productId: string) => {
+    return wishlistItems.some((item: Product) => item._id === productId);
   };
 
   return (
@@ -229,13 +251,77 @@ const Products = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className={`grid ${
-                    view === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6'
-                      : 'grid-cols-1 gap-4'
-                  }`}>
+                  <div className={view === 'grid' 
+                    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6'
+                    : 'flex flex-col space-y-4'
+                  }>
                     {products.map((product) => (
-                      <ProductCard key={product._id} product={product} />
+                      view === 'grid' ? (
+                        <ProductCard key={product._id} product={product} />
+                      ) : (
+                        <div key={product._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                          <div className="flex flex-col sm:flex-row gap-6">
+                            {/* Product Image */}
+                            <div className="w-full sm:w-48 h-48">
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                            </div>
+                            
+                            {/* Product Info */}
+                            <div className="flex-1 flex flex-col">
+                              <div className="flex-1">
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                                  {product.name}
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                                  {product.description}
+                                </p>
+                                <div className="space-y-2">
+                                  {product.features.slice(0, 2).map((feature, index) => (
+                                    <div key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+                                      <span className="mr-2">•</span>
+                                      <span>{feature}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Price and Actions */}
+                              <div className="mt-4 flex flex-wrap items-center gap-4">
+                                <div className="flex items-baseline">
+                                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    {formatCurrency(product.price)}
+                                  </span>
+                                  {product.originalPrice && (
+                                    <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
+                                      {formatCurrency(product.originalPrice)}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => handleAddToCart(product)}
+                                    disabled={!product.inStock}
+                                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                                  >
+                                    <ShoppingCart className="w-4 h-4" />
+                                    <span>{product.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleToggleWishlist(product._id)}
+                                    className="p-2 text-gray-400 hover:text-error-600 dark:hover:text-error-400 rounded-lg border border-gray-300 dark:border-gray-600"
+                                  >
+                                    <Heart className={`w-4 h-4 ${isItemInWishlist(product._id) ? 'fill-current text-error-600' : ''}`} />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
                     ))}
                   </div>
                 )}
