@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatBot from './components/ChatBot';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Categories from './pages/Categories';
@@ -42,9 +43,9 @@ const AppLayout = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-300">
       {!isAdminRoute && <Navbar />}
-      <main>
+      <main className="flex-grow w-full max-w-[100vw] overflow-x-hidden">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -95,9 +96,12 @@ const AppLayout = () => {
         position="top-right"
         toastOptions={{
           duration: 3000,
+          className: 'text-sm sm:text-base',
           style: {
             background: 'var(--toast-bg)',
             color: 'var(--toast-color)',
+            maxWidth: '90vw',
+            wordBreak: 'break-word'
           },
           success: {
             iconTheme: {
@@ -125,6 +129,7 @@ function App() {
           <CartProvider>
             <WishlistProvider>
               <Router>
+                <ScrollToTop />
                 <AppLayout />
               </Router>
             </WishlistProvider>
