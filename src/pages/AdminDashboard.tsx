@@ -37,6 +37,20 @@ import {
   Inventory as Package,
   Upload
 } from '@mui/icons-material';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
 interface Category {
   _id: string;
@@ -64,6 +78,18 @@ interface DashboardStats {
   totalCategories: number;
   recentOrders: Order[];
   revenue: number;
+  revenueData: {
+    date: string;
+    revenue: number;
+  }[];
+  categoryData: {
+    name: string;
+    orders: number;
+  }[];
+  orderStatusData: {
+    status: string;
+    count: number;
+  }[];
 }
 
 interface Order {
@@ -80,6 +106,15 @@ interface OrderPlacedEvent {
 
 interface BulkProduct extends Omit<Product, '_id'> {}
 
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    name?: string;
+  }>;
+  label?: string;
+}
+
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'orders'>('dashboard');
   const [products, setProducts] = useState<Product[]>([]);
@@ -89,7 +124,10 @@ const AdminDashboard: React.FC = () => {
     totalOrders: 0,
     totalCategories: 0,
     recentOrders: [],
-    revenue: 0
+    revenue: 0,
+    revenueData: [],
+    categoryData: [],
+    orderStatusData: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -142,7 +180,10 @@ const AdminDashboard: React.FC = () => {
         totalOrders: data.totalOrders || 0,
         totalCategories: data.totalCategories || 0,
         recentOrders: Array.isArray(data.recentOrders) ? data.recentOrders : [],
-        revenue: data.revenue || 0
+        revenue: data.revenue || 0,
+        revenueData: Array.isArray(data.revenueData) ? data.revenueData : [],
+        categoryData: Array.isArray(data.categoryData) ? data.categoryData : [],
+        orderStatusData: Array.isArray(data.orderStatusData) ? data.orderStatusData : []
       };
       
       setStats(stats);
@@ -641,6 +682,153 @@ const AdminDashboard: React.FC = () => {
               {stats.totalCategories || 0}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">Total Categories</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Analytics Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Revenue Trend Chart */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+            Revenue Trend
+          </h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={stats.revenueData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis
+                  dataKey="date"
+                  stroke="#6B7280"
+                  tick={{ fill: '#6B7280' }}
+                />
+                <YAxis
+                  stroke="#6B7280"
+                  tick={{ fill: '#6B7280' }}
+                  tickFormatter={(value: number) => `₹${value}`}
+                />
+                <RechartsTooltip
+                  wrapperStyle={{
+                    backgroundColor: '#1F2937',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    color: '#F3F4F6',
+                    padding: '8px'
+                  }}
+                  formatter={(value: number) => [`₹${value}`, 'Revenue']}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#3B82F6"
+                  strokeWidth={2}
+                  dot={{ fill: '#3B82F6', strokeWidth: 2 }}
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Orders by Category Chart */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+            Orders by Category
+          </h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={stats.categoryData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis
+                  dataKey="name"
+                  stroke="#6B7280"
+                  tick={{ fill: '#6B7280' }}
+                />
+                <YAxis
+                  stroke="#6B7280"
+                  tick={{ fill: '#6B7280' }}
+                />
+                <RechartsTooltip
+                  wrapperStyle={{
+                    backgroundColor: '#1F2937',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    color: '#F3F4F6',
+                    padding: '8px'
+                  }}
+                  formatter={(value: number) => [`${value} orders`, 'Orders']}
+                />
+                <Bar
+                  dataKey="orders"
+                  fill="#10B981"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Order Status Distribution */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 lg:col-span-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+            Order Status Distribution
+          </h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={stats.orderStatusData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={120}
+                  fill="#8884d8"
+                  paddingAngle={5}
+                  dataKey="count"
+                  nameKey="status"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  <Cell fill="#10B981" /> {/* Delivered - Green */}
+                  <Cell fill="#3B82F6" /> {/* Processing - Blue */}
+                  <Cell fill="#F59E0B" /> {/* Pending - Yellow */}
+                  <Cell fill="#EF4444" /> {/* Cancelled - Red */}
+                </Pie>
+                <RechartsTooltip
+                  wrapperStyle={{
+                    backgroundColor: '#1F2937',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    color: '#F3F4F6',
+                    padding: '8px'
+                  }}
+                  formatter={(value: number, name: string) => [`${value} orders`, name]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-[#10B981]"></div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Delivered</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-[#3B82F6]"></div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Processing</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-[#F59E0B]"></div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Pending</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-[#EF4444]"></div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Cancelled</span>
+            </div>
           </div>
         </div>
       </div>
