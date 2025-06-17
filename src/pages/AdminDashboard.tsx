@@ -39,6 +39,7 @@ import {
   TableRow,
   Menu,
   MenuItem,
+  ListItemButton,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -180,6 +181,7 @@ const AdminDashboard: React.FC = () => {
       return;
     }
     fetchCategories();
+    fetchProducts();
   }, [isAdmin, user, navigate]);
 
   useEffect(() => {
@@ -187,13 +189,12 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Socket.IO is temporarily disabled until backend implementation
     const fetchDataPeriodically = () => {
       fetchStats();
       fetchCategories();
+      fetchProducts();
     };
 
-    // Fetch data every 30 seconds as a fallback for real-time updates
     const interval = setInterval(fetchDataPeriodically, 30000);
 
     return () => {
@@ -281,17 +282,24 @@ const AdminDashboard: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`${API_URL}/admin/products`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      if (!response.ok) throw new Error('Failed to fetch products');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      
       const data = await response.json();
-      setProducts(Array.isArray(data) ? data : data.products || []);
+      setProducts(data);
     } catch (err) {
       console.error('Error fetching products:', err);
-      setError('Failed to load products');
+      setError('Failed to fetch products');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -617,8 +625,7 @@ const AdminDashboard: React.FC = () => {
       </Box>
       <Divider />
       <List>
-        <ListItem
-          button
+        <ListItemButton
           selected={activeTab === 'dashboard'}
           onClick={() => setActiveTab('dashboard')}
         >
@@ -626,9 +633,8 @@ const AdminDashboard: React.FC = () => {
             <DashboardIcon color={activeTab === 'dashboard' ? 'primary' : undefined} />
           </ListItemIcon>
           <ListItemText primary="Dashboard" />
-        </ListItem>
-        <ListItem
-          button
+        </ListItemButton>
+        <ListItemButton
           selected={activeTab === 'products'}
           onClick={() => setActiveTab('products')}
         >
@@ -636,9 +642,8 @@ const AdminDashboard: React.FC = () => {
             <InventoryIcon color={activeTab === 'products' ? 'primary' : undefined} />
           </ListItemIcon>
           <ListItemText primary="Products" />
-        </ListItem>
-        <ListItem
-          button
+        </ListItemButton>
+        <ListItemButton
           selected={activeTab === 'orders'}
           onClick={() => setActiveTab('orders')}
         >
@@ -646,16 +651,16 @@ const AdminDashboard: React.FC = () => {
             <OrderIcon color={activeTab === 'orders' ? 'primary' : undefined} />
           </ListItemIcon>
           <ListItemText primary="Orders" />
-        </ListItem>
+        </ListItemButton>
       </List>
       <Divider />
       <List>
-        <ListItem button onClick={handleLogout}>
+        <ListItemButton onClick={handleLogout}>
           <ListItemIcon>
             <LogoutIcon />
           </ListItemIcon>
           <ListItemText primary="Logout" />
-        </ListItem>
+        </ListItemButton>
       </List>
     </Box>
   );
@@ -851,50 +856,53 @@ const AdminDashboard: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((product) => (
-                <TableRow
-                  key={product._id}
-                  hover
-                  selected={selectedProducts.includes(product._id)}
-                >
-                  <TableCell padding="checkbox">
-                    <IconButton
-                      onClick={() => {
-                        if (selectedProducts.includes(product._id)) {
-                          setSelectedProducts(selectedProducts.filter(id => id !== product._id));
-                        } else {
-                          setSelectedProducts([...selectedProducts, product._id]);
-                        }
-                      }}
-                    >
-                      {selectedProducts.includes(product._id) ? (
-                        <ArrowDownwardIcon fontSize="small" />
-                      ) : (
-                        <ArrowUpwardIcon fontSize="small" />
-                      )}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell align="right">{formatCurrency(product.price)}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={product.inStock ? 'In Stock' : 'Out of Stock'}
-                      color={product.inStock ? 'success' : 'error'}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      onClick={() => handleDeleteProduct(product._id)}
-                      color="error"
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {products.map((product) => {
+                const category = categories.find(c => c._id === product.category);
+                return (
+                  <TableRow
+                    key={product._id}
+                    hover
+                    selected={selectedProducts.includes(product._id)}
+                  >
+                    <TableCell padding="checkbox">
+                      <IconButton
+                        onClick={() => {
+                          if (selectedProducts.includes(product._id)) {
+                            setSelectedProducts(selectedProducts.filter(id => id !== product._id));
+                          } else {
+                            setSelectedProducts([...selectedProducts, product._id]);
+                          }
+                        }}
+                      >
+                        {selectedProducts.includes(product._id) ? (
+                          <ArrowDownwardIcon fontSize="small" />
+                        ) : (
+                          <ArrowUpwardIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>{product.name}</TableCell>
+                    <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
+                    <TableCell align="right">{formatCurrency(product.price)}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={product.inStock ? 'In Stock' : 'Out of Stock'}
+                        color={product.inStock ? 'success' : 'error'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        onClick={() => handleDeleteProduct(product._id)}
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {products.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
