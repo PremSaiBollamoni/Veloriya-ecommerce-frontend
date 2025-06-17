@@ -16,12 +16,14 @@ const AdminLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Basic validation
       if (!email || !password) {
         setError('Please enter both email and password');
         setIsLoading(false);
         return;
       }
 
+      // Email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         setError('Please enter a valid email address');
@@ -29,19 +31,27 @@ const AdminLogin: React.FC = () => {
         return;
       }
 
-      const success = await adminLogin(email, password);
-      
-      if (success) {
-        navigate('/admin/dashboard');
-      } else {
-        if (email === 'Veloriya@va.in') {
-          setError('Incorrect password for admin account');
+      try {
+        const success = await adminLogin(email, password);
+        if (success) {
+          // Clear any existing errors
+          setError('');
+          // Navigate to dashboard
+          navigate('/admin/dashboard', { replace: true });
         } else {
-          setError('This email is not registered as an admin account');
+          setError('Invalid email or password');
+        }
+      } catch (err: any) {
+        // Handle specific API errors
+        if (err.message) {
+          setError(err.message);
+        } else {
+          setError('Failed to login. Please try again.');
         }
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
