@@ -262,7 +262,7 @@ const AdminDashboard: React.FC = () => {
       }
       
       const data = await response.json();
-      setProducts(Array.isArray(data) ? data : []);
+      setProducts(Array.isArray(data.products) ? data.products : []);
     } catch (err) {
       console.error('Error fetching products:', err);
       setError('Failed to fetch products');
