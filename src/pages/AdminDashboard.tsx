@@ -55,7 +55,14 @@ import {
   Menu as MenuIcon,
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
+  Inventory2 as Inventory2Icon,
+  ShoppingCart as ShoppingCartIcon,
+  Category as CategoryIcon2,
+  MonetizationOn as MonetizationOnIcon,
 } from '@mui/icons-material';
+import type { Theme } from '@mui/material/styles';
+import type { SxProps } from '@mui/system';
+import Grid2 from '@mui/material/Unstable_Grid2';
 
 interface Category {
   _id: string;
@@ -99,7 +106,83 @@ interface OrderPlacedEvent {
 
 interface BulkProduct extends Omit<Product, '_id'> {}
 
+interface StatsCardProps {
+  title: string;
+  value: number | string;
+  icon: React.ReactNode;
+  color: string;
+}
+
+interface RecentOrdersCardProps {
+  orders: Order[];
+}
+
 const DRAWER_WIDTH = 240;
+
+const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color }) => (
+  <Card sx={{ height: '100%', bgcolor: color, color: 'white' }}>
+    <CardContent>
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h6" component="div">
+          {title}
+        </Typography>
+        {icon}
+      </Box>
+      <Typography variant="h3" component="div" sx={{ mt: 2, mb: 1 }}>
+        {value}
+      </Typography>
+    </CardContent>
+  </Card>
+);
+
+const RecentOrdersCard: React.FC<RecentOrdersCardProps> = ({ orders }) => (
+  <Card>
+    <CardContent>
+      <Typography variant="h6" component="div" gutterBottom>
+        Recent Orders
+      </Typography>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Order ID</TableCell>
+              <TableCell align="right">Total</TableCell>
+              <TableCell>Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orders.map((order) => (
+              <TableRow key={order._id} hover>
+                <TableCell>{order._id}</TableCell>
+                <TableCell align="right">{formatCurrency(order.total)}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={order.status}
+                    color={
+                      order.status === 'completed'
+                        ? 'success'
+                        : order.status === 'pending'
+                        ? 'warning'
+                        : 'default'
+                    }
+                    size="small"
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+            {orders.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  No recent orders
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </CardContent>
+  </Card>
+);
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'orders'>('dashboard');
@@ -142,69 +225,53 @@ const AdminDashboard: React.FC = () => {
 
   const fetchStats = useCallback(async () => {
     try {
-      console.log('Fetching dashboard stats...');
       const response = await fetch(`${API_URL}/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-
-      console.log('Stats response status:', response.status);
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Stats error data:', errorData);
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        throw new Error('Failed to fetch stats');
       }
       
       const data = await response.json();
-      console.log('Stats data received:', data);
-      
-      const stats: DashboardStats = {
+      setStats({
         totalProducts: data.totalProducts || 0,
         totalOrders: data.totalOrders || 0,
         totalCategories: data.totalCategories || 0,
         recentOrders: Array.isArray(data.recentOrders) ? data.recentOrders : [],
         revenue: data.revenue || 0
-      };
-      
-      setStats(stats);
+      });
     } catch (err) {
-      console.error('Error fetching dashboard statistics:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch dashboard statistics');
+      console.error('Error fetching stats:', err);
+      setError('Failed to fetch stats');
     }
   }, []);
 
-  useEffect(() => {
-    if (!isAdmin || !user?.isAdmin) {
-      navigate('/admin/login');
-      return;
-    }
-    fetchCategories();
-    fetchProducts();
-  }, [isAdmin, user, navigate]);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  useEffect(() => {
-    const fetchDataPeriodically = () => {
-      fetchStats();
-      fetchCategories();
-      fetchProducts();
-    };
-
-    const interval = setInterval(fetchDataPeriodically, 30000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [fetchStats]);
-
-  const fetchCategories = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
-      setLoading(true);
+      const response = await fetch(`${API_URL}/admin/products`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      
+      const data = await response.json();
+      setProducts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to fetch products');
+      setProducts([]); // Ensure products is always an array
+    }
+  }, []);
+
+  const fetchCategories = useCallback(async () => {
+    try {
       const response = await fetch(`${API_URL}/admin/categories`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -212,13 +279,49 @@ const AdminDashboard: React.FC = () => {
       });
       if (!response.ok) throw new Error('Failed to fetch categories');
       const data = await response.json();
-      setCategories(data);
+      setCategories(Array.isArray(data) ? data : []);
     } catch (err) {
+      console.error('Error fetching categories:', err);
       setError('Failed to fetch categories');
+      setCategories([]); // Ensure categories is always an array
+    }
+  }, []);
+
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setLoading(true);
+      await Promise.all([
+        fetchCategories(),
+        fetchProducts(),
+        fetchStats()
+      ]);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Failed to fetch dashboard data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchCategories, fetchProducts, fetchStats]);
+
+  useEffect(() => {
+    if (!isAdmin || !user?.isAdmin) {
+      navigate('/admin/login');
+      return;
+    }
+    fetchDashboardData();
+  }, [isAdmin, user, navigate, fetchDashboardData]);
+
+  useEffect(() => {
+    const fetchDataPeriodically = () => {
+      fetchDashboardData();
+    };
+
+    const interval = setInterval(fetchDataPeriodically, 30000); // Refresh every 30 seconds
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [fetchDashboardData]);
 
   const handleAddCategory = async () => {
     try {
@@ -264,42 +367,6 @@ const AdminDashboard: React.FC = () => {
       fetchCategories();
     } catch (err) {
       setError('Failed to delete category');
-    }
-  };
-
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (err) {
-      console.error('Dashboard data error:', err);
-      setError('Failed to load dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_URL}/admin/products`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      
-      const data = await response.json();
-      setProducts(data);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError('Failed to fetch products');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -666,143 +733,45 @@ const AdminDashboard: React.FC = () => {
   );
 
   const renderDashboard = () => (
-    <Grid container spacing={3}>
-      {/* Stats Cards */}
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ height: '100%', bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Typography variant="h6" component="div">
-                Total Products
-              </Typography>
-              <InventoryIcon />
-            </Box>
-            <Typography variant="h3" component="div" sx={{ mt: 2, mb: 1 }}>
-              {stats.totalProducts}
-            </Typography>
-            <Typography variant="body2">
-              {stats.totalProducts > 0 ? 'Products in catalog' : 'No products yet'}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ height: '100%', bgcolor: 'success.light', color: 'success.contrastText' }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Typography variant="h6" component="div">
-                Total Orders
-              </Typography>
-              <OrderIcon />
-            </Box>
-            <Typography variant="h3" component="div" sx={{ mt: 2, mb: 1 }}>
-              {stats.totalOrders}
-            </Typography>
-            <Typography variant="body2">
-              {stats.totalOrders > 0 ? 'Orders processed' : 'No orders yet'}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ height: '100%', bgcolor: 'warning.light', color: 'warning.contrastText' }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Typography variant="h6" component="div">
-                Categories
-              </Typography>
-              <CategoryIcon />
-            </Box>
-            <Typography variant="h3" component="div" sx={{ mt: 2, mb: 1 }}>
-              {stats.totalCategories}
-            </Typography>
-            <Typography variant="body2">
-              {stats.totalCategories > 0 ? 'Active categories' : 'No categories yet'}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12} sm={6} md={3}>
-        <Card sx={{ height: '100%', bgcolor: 'info.light', color: 'info.contrastText' }}>
-          <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Typography variant="h6" component="div">
-                Revenue
-              </Typography>
-              <TrendingUp />
-            </Box>
-            <Typography variant="h3" component="div" sx={{ mt: 2, mb: 1 }}>
-              {formatCurrency(stats.revenue)}
-            </Typography>
-            <Typography variant="body2">
-              Total revenue generated
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {/* Recent Orders */}
-      <Grid item xs={12}>
-        <Card>
-          <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-              <Typography variant="h6" component="div">
-                Recent Orders
-              </Typography>
-              <Button
-                startIcon={<RefreshIcon />}
-                onClick={fetchDashboardData}
-                disabled={loading}
-              >
-                Refresh
-              </Button>
-            </Box>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Order ID</TableCell>
-                    <TableCell align="right">Total</TableCell>
-                    <TableCell>Status</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {stats.recentOrders.map((order) => (
-                    <TableRow key={order._id} hover>
-                      <TableCell>{order._id}</TableCell>
-                      <TableCell align="right">{formatCurrency(order.total)}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={order.status}
-                          color={
-                            order.status === 'completed'
-                              ? 'success'
-                              : order.status === 'pending'
-                              ? 'warning'
-                              : 'default'
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {stats.recentOrders.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={3} align="center">
-                        No recent orders
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+    <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' } }}>
+        <Box>
+          <StatsCard
+            title="Total Products"
+            value={stats.totalProducts}
+            icon={<Inventory2Icon />}
+            color="#4CAF50"
+          />
+        </Box>
+        <Box>
+          <StatsCard
+            title="Total Orders"
+            value={stats.totalOrders}
+            icon={<ShoppingCartIcon />}
+            color="#2196F3"
+          />
+        </Box>
+        <Box>
+          <StatsCard
+            title="Categories"
+            value={stats.totalCategories}
+            icon={<CategoryIcon />}
+            color="#FF9800"
+          />
+        </Box>
+        <Box>
+          <StatsCard
+            title="Revenue"
+            value={formatCurrency(stats.revenue)}
+            icon={<MonetizationOnIcon />}
+            color="#F44336"
+          />
+        </Box>
+      </Box>
+      <Box sx={{ mt: 3 }}>
+        <RecentOrdersCard orders={stats.recentOrders} />
+      </Box>
+    </Box>
   );
 
   const renderProducts = () => (
@@ -856,7 +825,7 @@ const AdminDashboard: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((product) => {
+              {Array.isArray(products) && products.map((product) => {
                 const category = categories.find(c => c._id === product.category);
                 return (
                   <TableRow
@@ -903,7 +872,7 @@ const AdminDashboard: React.FC = () => {
                   </TableRow>
                 );
               })}
-              {products.length === 0 && (
+              {(!Array.isArray(products) || products.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
                     No products available
