@@ -73,6 +73,7 @@ const ChatBot: React.FC = () => {
     }
     return (
       <div 
+        className="whitespace-pre-wrap leading-relaxed"
         dangerouslySetInnerHTML={{ __html: message.text }} 
         onClick={(e) => {
           const target = e.target as HTMLElement;
