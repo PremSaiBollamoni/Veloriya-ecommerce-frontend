@@ -194,7 +194,7 @@ export const useChat = () => {
 
         // Enhanced initial message
         setMessages([{
-      id: 1,
+          id: 1,
           text: `${getGreeting()}${user ? ` ${user.name}` : ''}! 👋 I'm your Veloriya shopping assistant.
 
 I can help you with:
@@ -206,8 +206,8 @@ I can help you with:
 • General inquiries
 
 How can I assist you today?`,
-      isUser: false,
-      timestamp: new Date()
+          isUser: false,
+          timestamp: new Date()
         }]);
       } catch (error) {
         console.error('Error fetching products:', error);
