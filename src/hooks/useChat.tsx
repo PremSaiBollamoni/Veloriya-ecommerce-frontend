@@ -186,19 +186,24 @@ export const useChat = () => {
         const data = await response.json() as Product[];
         setProducts(data);
         
-        const uniqueCategories: string[] = [...new Set(data.map(p => p.category))];
+        // Fix category extraction
+        const uniqueCategories = Array.from(new Set(data.map(p => p.category))).filter(Boolean);
         setCategories(uniqueCategories);
         
         const featured = data.filter(p => p.featured);
         setFeaturedProducts(featured);
 
-        // Enhanced initial message
+        // Enhanced initial message with proper category formatting
+        const formattedCategories = uniqueCategories.length > 0 
+          ? uniqueCategories.join(', ')
+          : 'All Categories';
+
         setMessages([{
           id: 1,
           text: `${getGreeting()}${user ? ` ${user.name}` : ''}! 👋 I'm your Veloriya shopping assistant.
 
 I can help you with:
-• Finding products in our categories: ${uniqueCategories.join(', ')}
+• Finding products in our categories: ${formattedCategories}
 • Checking order status
 • Shipping and delivery information
 • Returns and refunds
