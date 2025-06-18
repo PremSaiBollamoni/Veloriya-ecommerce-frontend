@@ -17,7 +17,10 @@ interface Product {
   originalPrice: number;
   description: string;
   image: string;
-  category: string;
+  category: {
+    _id: string;
+    name: string;
+  } | string;
   features: string[];
   rating: number;
   reviews: any[];
@@ -78,7 +81,7 @@ const formatProductDetails = (product: Product) => {
     <div class="product-details text-sm">
       <p class="mb-2"><strong>Description:</strong> ${product.description}</p>
       <p class="mb-2"><strong>Key Features:</strong> ${product.features.join(', ')}</p>
-      <p class="mb-2"><strong>Category:</strong> ${product.category}</p>
+      <p class="mb-2"><strong>Category:</strong> ${typeof product.category === 'object' ? product.category.name : product.category}</p>
       <div class="flex items-center mb-2">
         <strong>Rating:</strong>
         <div class="flex items-center ml-2">
@@ -186,8 +189,10 @@ export const useChat = () => {
         const data = await response.json() as Product[];
         setProducts(data);
         
-        // Fix category extraction
-        const uniqueCategories = Array.from(new Set(data.map(p => p.category))).filter(Boolean);
+        // Fix category extraction to handle both string and object categories
+        const uniqueCategories = Array.from(new Set(data.map(p => 
+          typeof p.category === 'object' ? p.category.name : p.category
+        ))).filter(Boolean);
         setCategories(uniqueCategories);
         
         const featured = data.filter(p => p.featured);
@@ -588,7 +593,7 @@ Store Categories: ${categories.join(', ')}
 
 Available Products:
 ${products.map(product => 
-  `${product.name} - $${product.price} - ${product.description} - Category: ${product.category}`
+  `${product.name} - $${product.price} - ${product.description} - Category: ${typeof product.category === 'object' ? product.category.name : product.category}`
 ).join('\n')}
 
 Current user cart items: ${JSON.stringify(cartState.items)}
