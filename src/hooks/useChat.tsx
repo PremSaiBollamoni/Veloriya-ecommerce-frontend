@@ -198,24 +198,14 @@ export const useChat = () => {
         const featured = data.filter(p => p.featured);
         setFeaturedProducts(featured);
 
-        // Enhanced initial message with proper category formatting
+        // Enhanced initial message with proper category formatting and line breaks
         const formattedCategories = uniqueCategories.length > 0 
           ? uniqueCategories.join(', ')
           : 'All Categories';
 
         setMessages([{
           id: 1,
-          text: `${getGreeting()}${user ? ` ${user.name}` : ''}! 👋 I'm your Veloriya shopping assistant.
-
-I can help you with:
-• Finding products in our categories: ${formattedCategories}
-• Checking order status
-• Shipping and delivery information
-• Returns and refunds
-• Account assistance
-• General inquiries
-
-How can I assist you today?`,
+          text: `${getGreeting()}${user ? ` ${user.name}` : ''}! 👋 I'm your Veloriya shopping assistant.\n\nI can help you with:\n\n• Finding products in our categories: ${formattedCategories}\n\n• Checking order status\n\n• Shipping and delivery information\n\n• Returns and refunds\n\n• Account assistance\n\n• General inquiries\n\nHow can I assist you today?`,
           isUser: false,
           timestamp: new Date()
         }]);
