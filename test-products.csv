@@ -1,0 +1,3 @@
+name,price,originalPrice,description,image,category,features,inStock,featured
+"Leather Watch Band",29.99,39.99,"Premium genuine leather watch band compatible with most watches","https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400","Accessories","Genuine Leather;Multiple Colors;Easy Installation",true,false
+"Wireless Phone Charger",24.99,34.99,"Fast wireless charging pad for all Qi-enabled devices","https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400","Electronics","15W Fast Charging;LED Indicator;Non-slip Base",true,true 
