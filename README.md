@@ -138,19 +138,6 @@ Follow these steps to get a local copy up and running.
 
 ---
 
-## 📸 Screenshots
-
-<div align="center">
-  <!-- Replace these with actual screenshots of your application -->
-  <img src="https://via.placeholder.com/800x450?text=Home+Page" alt="Home Page" width="800"/>
-  <br/><br/>
-  <img src="https://via.placeholder.com/800x450?text=Product+Details" alt="Product Details" width="800"/>
-  <br/><br/>
-  <img src="https://via.placeholder.com/800x450?text=Checkout+Process" alt="Checkout" width="800"/>
-</div>
-
----
-
 ## 🤝 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
